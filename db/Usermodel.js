@@ -1,42 +1,34 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  btc: {
-    type: String,
-    default: "",
-  },
-  phone: {
-    type: String,
-    default: "",
-  },
-  email: {
-    type: String,
-    required: [true, "Please enter an email"],
+  productId: {
+    type: Number,
+    required: [true, "Please enter your tracking number"],
     unique: true,
-    lowercase: true,
   },
-  password: {
+  address: {
     type: String,
-    required: [true, "Please enter a password"],
-    minlength: [6, "Minimum password length is 6 characters"],
+    default: "",
   },
-  deposit: {
+  clientName: {
+    type: String,
+    required: [true, "Please enter your client name"],
+  },
+  dhlNum: {
     type: Number,
-    default: 0,
+    required: true,
   },
-  withdrawal: {
+  payMethod: {
+    type: String,
+  },
+  order: {
     type: Number,
-    default: 0,
   },
-  balance: {
-    type: Number,
-    default: 0,
-  },
-  profits: {
+  amount: {
     type: Number,
     default: 0,
   },
@@ -45,10 +37,50 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
-  active: {
-    type: Boolean,
-    default: false
-  }
+  // btc: {
+  //   type: String,
+  //   default: "",
+  // },
+  // phone: {
+  //   type: String,
+  //   default: "",
+  // },
+  // email: {
+  //   type: String,
+  //   required: [true, "Please enter an email"],
+  //   unique: true,
+  //   lowercase: true,
+  // },
+  // password: {
+  //   type: String,
+  //   required: [true, "Please enter a password"],
+  //   minlength: [6, "Minimum password length is 6 characters"],
+  // },
+  // deposit: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // withdrawal: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // balance: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // profits: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // role: {
+  //   type: String,
+  //   enum: ["Product", "admin"],
+  //   default: "Product",
+  // },
+  // active: {
+  //   type: Boolean,
+  //   default: false,
+  // },
 });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model("Pdt", ProductSchema);

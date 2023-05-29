@@ -259,7 +259,7 @@ const sendPassword = async (req, res) => {
 
 const changePassword = async (req, res) => {
   const { email, pwd } = req.body;
-
+  console.log({pwd});
   if (checkEmail(email)) {
     try {
       const isDone = await User.findOneAndUpdate(
@@ -268,6 +268,7 @@ const changePassword = async (req, res) => {
           password: pwd,
         }
       );
+      console.log({ isDone });
       res.json(isDone);
     } catch (err) {
       res.json({ err });

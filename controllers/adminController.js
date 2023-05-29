@@ -1,326 +1,129 @@
 import pkg from "validator";
 import nodemailer from "nodemailer";
-import User from "../db/Usermodel.js";
+import mongoose from "mongoose";
+import Product from "../db/Usermodel.js";
 
-const { isEmail, isEmpty } = pkg;
+const { ObjectId } = mongoose.Types;
 
-// Utility functions
-const checkEmail = (email) => {
-  let valid = true;
-  if (isEmpty(email) || !isEmail(email)) {
-    valid = false;
+export const track = async (req, res) => {
+  const { id: productId } = req.params;
+  console.log("rrrrr", { productId });
+  // console.log({ q: req.query });
+
+  if (!ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid ID" });
   }
-  return valid;
-};
 
-const sendMailx = async (output, email, h, s) => {
-  try {
-    let transporter = nodemailer.createTransport({
-      host: "phoenixfx.net",
-      port: 465,
-      secure: true, // true for 465, false for other ports
-      auth: {
-        user: "support@phoenixfx.net",
-        pass: "ethereal$12", // generated ethereal password
-      },
-    });
-
-    let info = await transporter.sendMail({
-      from: '"WhitebullSafety" <support@phoenixfx.net>', // sender address
-      to: email, // list of receivers
-      subject: s, // Subject line
-      text: output, // plain text body
-      html: h,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const sendingMsg = (name, value, heading, email) => {
-  edit;
-  if (value > 0) {
-    const themsg = `Your ${name} of ${value}USD has been approved for your account. 
-    \nThank you for choosing whitebull safety . For complaints or inquires, do not hesitate to contact our 24/7 support team via email: support@whitebull safety \n
-
-    \nRegards, 
-    \nwhitebull safety`;
-
-    sendMailx(themsg, email, "", heading);
-  }
-};
-
-// Controller functions
-// get all users
-export const allUsers = async (req, res) => {
-  const users = await User.find({});
-
-  const filtered = users.filter((user) => user.role !== "admin");
-
-  res.json({ users: filtered, count: filtered.length });
-};
-
-// get all withdrawals
-export const withdrawals = async (req, res) => {
-  const users = await User.find({});
-  const filtered = users.filter(
-    (user) => user.withdrawal > 0 && user.role !== "admin"
-  );
-
-  res.json({ users: filtered, count: filtered.length });
-};
-
-// get all deposits
-export const deposits = async (req, res) => {
-  const users = await User.find({});
-
-  const filtered = users.filter(
-    (user) => user.deposit > 0 && user.role !== "admin"
-  );
-
-  res.json({
-    users: filtered,
-    count: filtered.length,
-  });
-};
-
-export const editUser = async (req, res) => {
-  const { email, name, withdrawal, deposit, balance, profits } = req.body;
-
-  if (checkEmail(email)) {
+  if (productId) {
     try {
-      let user = await User.findOne({ email });
-
-      if (!user) {
-        res.json({ error: "User Not Found" });
+      let product = await Product.findOne({ _id: productId });
+      if (!product) {
+        return res.status(404).send("Product not found");
       }
-
-      user = await User.findOneAndUpdate(
-        { email },
-        { name, withdrawal, deposit, balance, profits },
-        {
-          new: true,
-        }
-      );
-
-      // sendingMsg('deposit', deposit, 'Update on Deposit', email);
-      // sendingMsg('withdrawal', withdrawal, 'Update on Withdrawal', email);
-      // sendingMsg('profit', profits, 'Update on Profit', email);
-
-      res.json({ user, msg: "User Edit Successful" });
+      res.send(product);
     } catch (err) {
-      res.json({ err: "try again later?" });
+      console.error(err);
+      res.status(500).send("Server Error");
     }
-  } else {
-    res.json({ err: "invalid email" });
   }
 };
 
-export const deleteUser = async (req, res) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email });
-
-  // console.log('user', user);
-
-  if (!user) {
-    // console.log('no user to delete');
-    res.json({ msg: "email not found" });
-  } else if (user.role !== "admin") {
-    //if not the admin delete
-    await User.findOneAndRemove({ email });
-    res.json({ msg: "user deleted successfully" });
+export const createProduct = async (req, res) => {
+  const { name, productId, address, clientName, dhlNum, order, payMethod } =
+    req.body;
+  try {
+    const product = await Product.create({
+      name,
+      productId,
+      address,
+      clientName,
+      dhlNum,
+      payMethod,
+      order,
+      amount: 0,
+    });
+    res.status(201).json({
+      product,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
   }
 };
 
-export const deposit = async (req, res) => {
-  const { email, deposit } = req.body;
+export const allProducts = async (req, res) => {
+  const products = await Product.find({});
 
-  if (!email || !deposit) {
-    return res.json({ msg: "Please provide necessary fields" });
-  }
+  const filtered = products.filter((product) => product.role !== "admin");
 
-  if (checkEmail(email)) {
-    let user = await User.findOne({ email });
-
-    if (user) {
-      user = await User.findOneAndUpdate(
-        { email },
-        { deposit },
-        {
-          new: true,
-        }
-      );
-
-      let msg = `Your deposit of ${deposit}USD has been made. Login to access your profile.
-      For further assistance, you can reach out to support.\n
-      
-      \nRegards,
-      \nPhoenixfx  Investment.`;
-
-      // sendMailx(msg, email, 'Update on Deposit status.');
-      return res.json({ user, msg: "Deposit made" });
-    } else {
-      return res.json({ err: "user not found" });
-    }
-  } else {
-    res.json({ err: "invalid email" });
-  }
+  res.json({ products: filtered, count: filtered.length });
 };
 
-export const withdraw = async (req, res) => {
-  const { email, withdrawal } = req.body;
-
-  if (!email || !withdrawal) {
-    return res.json({ msg: "Please provide necessary fields" });
-  }
-
-  if (checkEmail(email)) {
-    let user = await User.findOne({ email });
-
-    if (user) {
-      user = await User.findOneAndUpdate(
-        { email },
-        { withdrawal },
-        {
-          new: true,
-        }
-      );
-
-      let msg = `${email} just requested a ${withdrawal} withdrawal.
-
-      \nRegards,
-      \nPhoenixfx `;
-
-      // sendMailx(msg, 'support@phoenixfx.net', 'Withdrawal Requested');
-
-      res.json({ user, msg: "Withdrawal requested" });
-    } else {
-      res.json({ err: "user not found" });
-    }
-  } else {
-    res.json({ err: "invalid email" });
-  }
-};
-
-export const approveDeposit = async (req, res) => {
-  const { email, deposit } = req.body;
+export const editProduct = async (req, res) => {
+  const { id: productId } = req.params;
 
   try {
-    let user = await User.findOne({ email });
-    let { balance } = user;
-
-    balance += deposit;
-
-    user = await User.findOneAndUpdate(
-      { email },
-      { balance, deposit: 0 },
-      {
-        new: true,
-      }
+    const product = await Product.findOneAndUpdate(
+      { id: productId },
+      // { name, address, clientName },
+      req.body,
+      { new: true } // Return the updated product after the update
     );
 
-    let msg = `Your Deposit of ${deposit}USD has been approved.
-      \nThank you for choosing Phoenixfx. For complaints or inquires, do not hesitate to contact our 24/7 support team via email: support@Phoenixfx .com\n
-
-      \nRegards,
-      \nPhoenixfx `;
-
-    // sendMailx(msg, email, 'Update on Deposit status.');
-
-    res.json({ user, msg: "Deposit approved" });
-  } catch (err) {
-    console.log("approve er", err);
-    res.json({ err: "cant approve deposit at this time" });
-  }
-};
-
-export const approveWithdrawal = async (req, res) => {
-  //console.log('w');
-  const { email, withdrawal } = req.body;
-
-  try {
-    let user = await User.findOne({ email });
-
-    let { balance } = user;
-
-    if (!(balance <= 0)) {
-      balance -= withdrawal;
-    } else {
-      res.json({ error: "insufficient balance" });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
     }
 
-    user = await User.findOneAndUpdate(
-      { email },
-      { balance, withdrawal: 0 },
-      {
-        new: true,
-      }
-    );
-
-    let msg = `Your withdrawal of ${withdrawal}USD has been approved.
-      \nThank you for choosing Phoenixfx. For complaints or inquires, do not hesitate to contact our 24/7 support team via email: support@Phoenixfx .com\n
-
-      \nRegards,
-      \nPhoenixfx `;
-
-    // sendMailx(msg, email, 'Update on withdrawal status.');
-
-    res.json({ user, msg: "Withdrawal approved" });
-  } catch (err) {
-    // console.log('approve er', err);
-    res.json({ err: "cant approve withdrawal at this time" });
+    return res.json(product);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Server error' });
   }
-};
+}
 
-export const declineDeposit = async (req, res) => {
-  const { email, deposit } = req.body;
+// export const editProduct = async (req, res) => {
+//   const { name, address, clientName,  id: productId} = req.body;
+//   console.log({ name, address, clientName });
+
+//   if (productId) {
+//     try {
+//       let product = await Product.findOne({ _id: productId });
+
+//       if (!product) {
+//         res.json({ error: "Product Not Found" });
+//       }
+
+//       product = await Product.findOneAndUpdate(
+//         { _id: productId },
+//         { name, address, clientName },
+//         {
+//           new: true,
+//         }
+//       );
+
+//       res.json({ product, msg: "Product Edit Successful" });
+//     } catch (err) {
+//       res.json({ err: "try again later?" });
+//     }
+//   } else {
+//     res.json({ err: "invalid ID" });
+//   }
+// };
+
+export const deleteProduct = async (req, res) => {
+  const { id: productId } = req.params;
+  console.log("deleteProduct", { productId });
 
   try {
-    const user = await User.findOneAndUpdate(
-      { email },
-      { deposit: 0 },
-      {
-        new: true,
-      }
-    );
+    const product = await Product.findOneAndRemove({ _id: productId });
 
-    let msg = `Your Deposit of ${deposit}USD has been declined.
-      \nThank you for choosing Phoenixfx . For complaints or inquires, do not hesitate to contact our 24/7 support team via email: support@Phoenixfx .com\n
+    if (!product) {
+      return res.status(404).json({ msg: "Product not found" });
+    }
 
-      \nRegards,
-      \nPhoenixfx `;
-
-    // sendMailx(msg, email, 'Update on Deposit status.');
-
-    res.json({ user, msg: "Deposit declined" });
-  } catch (err) {
-    res.json({ err: "cant approve deposit at this time" });
-  }
-};
-
-export const declineWithdrawal = async (req, res) => {
-  const { email, withdrawal } = req.body;
-
-  try {
-    const user = await User.findOneAndUpdate(
-      { email },
-      { withdrawal: 0 },
-      {
-        new: true,
-      }
-    );
-
-    let msg = `Your withdrawal of ${withdrawal}USD has been declined.
-      \nThank you for choosing Phoenixfx . For complaints or inquires, do not hesitate to contact our 24/7 support team via email: support@Phoenixfx .com\n
-
-      \nRegards,
-      \nPhoenixfx `;
-
-    // sendMailx(msg, email, 'Update on withdrawal status.');
-
-    res.json({ user, msg: "Withdrawal declined" });
-  } catch (err) {
-    res.json({ err: "cant approve withdrawal at this time" });
+    res.json({ msg: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ msg: "Server error" });
   }
 };
