@@ -38,9 +38,9 @@ export const createProduct = async (req, res) => {
       address,
       clientName,
       dhlNum,
-      // payMethod,
-      // order,
-      // amount: 0,
+      payMethod,
+      order,
+      amount: 0,
     });
     res.status(201).json({
       product,
