@@ -38,9 +38,9 @@ export const createProduct = async (req, res) => {
       address,
       clientName,
       dhlNum,
-      payMethod,
-      order,
-      amount: 0,
+      // payMethod,
+      // order,
+      // amount: 0,
     });
     res.status(201).json({
       product,
@@ -71,15 +71,15 @@ export const editProduct = async (req, res) => {
     );
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: "Product not found" });
     }
 
     return res.json(product);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 // export const editProduct = async (req, res) => {
 //   const { name, address, clientName,  id: productId} = req.body;
