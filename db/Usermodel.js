@@ -28,7 +28,6 @@ const ProductSchema = new mongoose.Schema({
   },
   dhlNum: {
     type: Number,
-    required: true,
   },
   payMethod: {
     type: String,
@@ -67,7 +66,6 @@ const ProductSchema = new mongoose.Schema({
   },
   distance: {
     type: Number,
-    required: [true, "Please enter a distance"],
     default: 0,
   },
   weight: {
@@ -76,7 +74,6 @@ const ProductSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, "Please enter a description"],
     default: "",
   }
   // password: {
