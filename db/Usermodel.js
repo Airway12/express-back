@@ -5,12 +5,20 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  recName: {
+    type: String,
+    required: true,
+  },
   productId: {
     type: Number,
     required: [true, "Please enter your tracking number"],
     unique: true,
   },
   address: {
+    type: String,
+    default: "",
+  },
+  recAddress: {
     type: String,
     default: "",
   },
@@ -37,20 +45,26 @@ const ProductSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
-  // btc: {
-  //   type: String,
-  //   default: "",
-  // },
-  // phone: {
-  //   type: String,
-  //   default: "",
-  // },
-  // email: {
-  //   type: String,
-  //   required: [true, "Please enter an email"],
-  //   unique: true,
-  //   lowercase: true,
-  // },
+  phone: {
+    type: String,
+    default: "",
+  },
+  recPhone: {
+    type: String,
+    default: "",
+  },
+  email: {
+    type: String,
+    required: [true, "Please enter an email"],
+    unique: true,
+    lowercase: true,
+  },
+  recEmail: {
+    type: String,
+    required: [true, "Please enter an email"],
+    unique: true,
+    lowercase: true,
+  },
   // password: {
   //   type: String,
   //   required: [true, "Please enter a password"],

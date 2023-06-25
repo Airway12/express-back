@@ -10,13 +10,13 @@ export const track = async (req, res) => {
   console.log("rrrrr", { productId });
   // console.log({ q: req.query });
 
-  if (!ObjectId.isValid(productId)) {
-    return res.status(400).json({ error: "Invalid ID" });
+  if (isNaN(productId)) {
+    return res.status(400).send("Invalid ID" );
   }
 
   if (productId) {
     try {
-      let product = await Product.findOne({ _id: productId });
+      let product = await Product.findOne({ productId: productId });
       if (!product) {
         return res.status(404).send("Product not found");
       }
@@ -29,17 +29,24 @@ export const track = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const { name, productId, address, clientName, dhlNum, order, payMethod } =
+  const { name, productId, address, clientName, dhlNum, order, payMethod, recName, recAddress, recPhone, email, recEmail, phone } =
     req.body;
+    console.log("fff", name);
   try {
     const product = await Product.create({
       name,
       productId,
       address,
+      phone,
+      email,
       clientName,
       dhlNum,
       payMethod,
       order,
+      recName,
+      recEmail,
+      recPhone,
+      recAddress,
       amount: 0,
     });
     res.status(201).json({
@@ -80,35 +87,6 @@ export const editProduct = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
-
-// export const editProduct = async (req, res) => {
-//   const { name, address, clientName,  id: productId} = req.body;
-//   console.log({ name, address, clientName });
-
-//   if (productId) {
-//     try {
-//       let product = await Product.findOne({ _id: productId });
-
-//       if (!product) {
-//         res.json({ error: "Product Not Found" });
-//       }
-
-//       product = await Product.findOneAndUpdate(
-//         { _id: productId },
-//         { name, address, clientName },
-//         {
-//           new: true,
-//         }
-//       );
-
-//       res.json({ product, msg: "Product Edit Successful" });
-//     } catch (err) {
-//       res.json({ err: "try again later?" });
-//     }
-//   } else {
-//     res.json({ err: "invalid ID" });
-//   }
-// };
 
 export const deleteProduct = async (req, res) => {
   const { id: productId } = req.params;
