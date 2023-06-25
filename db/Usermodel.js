@@ -65,6 +65,20 @@ const ProductSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
   },
+  distance: {
+    type: Number,
+    required: [true, "Please enter a distance"],
+    default: 0,
+  },
+  weight: {
+    type: Number,
+    default: 0,
+  },
+  description: {
+    type: String,
+    required: [true, "Please enter a description"],
+    default: "",
+  }
   // password: {
   //   type: String,
   //   required: [true, "Please enter a password"],
