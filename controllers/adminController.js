@@ -30,7 +30,7 @@ export const track = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const { name, productId, address, clientName, dhlNum, order, payMethod, recName, recAddress, recPhone, email, recEmail, phone, distance, weight, description, StatusAddress } =
+  const { name, productId, address, clientName, dhlNum, order, payMethod, recName, recAddress, recPhone, email, recEmail, phone, distance, weight, description, statusAddress } =
     req.body;
     console.log("fff", name);
   try {
@@ -51,7 +51,7 @@ export const createProduct = async (req, res) => {
       distance,
       weight,
       description,
-      StatusAddress,
+      statusAddress,
       amount: 0,
     });
     res.status(201).json({

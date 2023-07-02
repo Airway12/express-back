@@ -18,7 +18,7 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  StatusAddress: {
+  statusAddress: {
     type: String,
     default: "",
   },
