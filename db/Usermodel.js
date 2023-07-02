@@ -18,6 +18,10 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  StatusAddress: {
+    type: String,
+    default: "",
+  },
   recAddress: {
     type: String,
     default: "",
@@ -75,37 +79,7 @@ const ProductSchema = new mongoose.Schema({
   description: {
     type: String,
     default: "",
-  }
-  // password: {
-  //   type: String,
-  //   required: [true, "Please enter a password"],
-  //   minlength: [6, "Minimum password length is 6 characters"],
-  // },
-  // deposit: {
-  //   type: Number,
-  //   default: 0,
-  // },
-  // withdrawal: {
-  //   type: Number,
-  //   default: 0,
-  // },
-  // balance: {
-  //   type: Number,
-  //   default: 0,
-  // },
-  // profits: {
-  //   type: Number,
-  //   default: 0,
-  // },
-  // role: {
-  //   type: String,
-  //   enum: ["Product", "admin"],
-  //   default: "Product",
-  // },
-  // active: {
-  //   type: Boolean,
-  //   default: false,
-  // },
+  },
 });
 
 export default mongoose.model("Pdt", ProductSchema);

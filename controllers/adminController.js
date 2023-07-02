@@ -1,4 +1,5 @@
 import pkg from "validator";
+import { body, validationResult } from "express-validator";
 import nodemailer from "nodemailer";
 import mongoose from "mongoose";
 import Product from "../db/Usermodel.js";
@@ -29,7 +30,7 @@ export const track = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const { name, productId, address, clientName, dhlNum, order, payMethod, recName, recAddress, recPhone, email, recEmail, phone, distance, weight, description } =
+  const { name, productId, address, clientName, dhlNum, order, payMethod, recName, recAddress, recPhone, email, recEmail, phone, distance, weight, description, StatusAddress } =
     req.body;
     console.log("fff", name);
   try {
@@ -50,6 +51,7 @@ export const createProduct = async (req, res) => {
       distance,
       weight,
       description,
+      StatusAddress,
       amount: 0,
     });
     res.status(201).json({
