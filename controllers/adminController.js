@@ -76,7 +76,7 @@ export const editProduct = async (req, res) => {
 
   try {
     const product = await Product.findOneAndUpdate(
-      { id: productId },
+      { productId: productId },
       // { name, address, clientName },
       req.body,
       { new: true } // Return the updated product after the update
